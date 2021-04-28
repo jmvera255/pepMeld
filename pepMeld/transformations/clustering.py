@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from .utils import *
 
 '''
@@ -270,19 +271,49 @@ class clustering:
                 ['X', 'Y']]
             # convert DF to an array
             cluster_points_array = cluster_points_df_i.values
-            # get the hull for the cluster
-            hull = ConvexHull(cluster_points_array)
-            # get the vertices of the hull
-            hull_vertices = cluster_points_array[hull.vertices]
-            # get points inside the hull vertices as a numpy array
-            contained_points = in_hull(self.df_dict[df_in_name][['X', 'Y']].values, hull_vertices)
+            shape = cluster_points_array.shape
+            #print('\ncluster_points_array Shape :', shape)
+            #print('\nNumber of rows :', shape[0])
+            #print('\nNumber of columns :', shape[1])
+            contained_points = np.zeros([1,2])
+            if shape[0] > 2:
+                # get the hull for the cluster
+                hull = ConvexHull(cluster_points_array)
+                # get the vertices of the hull
+                hull_vertices = cluster_points_array[hull.vertices]
+                #print(hull_vertices)
+                # get points inside the hull vertices as a numpy array
+                contained_points = in_hull(self.df_dict[df_in_name][['X', 'Y']].values, hull_vertices)
+            else:
+                print("\ntoo few points for convex hull. Creating box of points...")
+                print(cluster_points_array)
+                #print("============")
+                #print(self.df_dict[df_in_name][['X', 'Y']].values)
+                minX = min(cluster_points_array[:,0])
+                maxX = max(cluster_points_array[:,0])
+                minY = min(cluster_points_array[:,1])
+                maxY = max(cluster_points_array[:,1])
+                #print("maxX:",str(maxX)," maxY:",str(maxY),"\n")
+                nx = maxX - minX + 1
+                ny = maxY - minY + 1
+                nrow = nx * ny
+                #print("nx:",str(nx)," ny:",str(ny)," nrow:",str(nrow))
+                contained_points = np.zeros([nrow,2], np.int32)
+                pt_idx = 0;
+                for X in range(minX, maxX+1):
+                    for Y in range(minY, maxY+1):
+                        #print("pt:",str(pt_idx)," X:",str(X)," Y:",str(Y))
+                        contained_points[pt_idx,0] = int(X)
+                        contained_points[pt_idx,1] = int(Y)
+                        pt_idx = pt_idx + 1
+                print(contained_points)            
             # contained_points
             # convert back to dataframe
             contained_points_df = pd.DataFrame(contained_points, columns=['X', 'Y'])
             # name the cluster, Sample name, percentile and oritinal clustercount
             contained_points_df['CLUSTER'] = [row['CLUSTER']] * len(contained_points_df.index)
             contained_points_df[self.sample_name_column] = [row[self.sample_name_column]] * len(
-                contained_points_df.index)
+                    contained_points_df.index)
             contained_points_df['PERCENTILE'] = [row['PERCENTILE']] * len(contained_points_df.index)
             contained_points_df['ORIGINAL_CLUSTER_COUNT'] = [row['CLUSTER_COUNT']] * len(contained_points_df.index)
             # get the newly expanded cluster count
