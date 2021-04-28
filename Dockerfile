@@ -12,8 +12,8 @@ COPY . /app
 FROM python:3.8.0-slim as app
 COPY --from=builder /root/.local /root/.local
 ENV PATH=/root/.local/bin:$PATH
-COPY pepMeld /pepMeld
-#RUN cd / && tar -xzf pepMeld-master.tar.gz && rm pepMeld-master.tar.gz && mv pepMeld-master pepMeld
+COPY ./*py /pepMeld/
+COPY pepMeld /pepMeld/pepMeld/
 ADD http://drive5.com/muscle/downloads3.8.31/muscle3.8.31_i86linux64.tar.gz /muscle3.8.31_i86linux64.tar.gz
 RUN cd / && tar -xzf muscle3.8.31_i86linux64.tar.gz && rm muscle3.8.31_i86linux64.tar.gz && mv muscle3.8.31_i86linux64 muscle
 WORKDIR /pepMeld
