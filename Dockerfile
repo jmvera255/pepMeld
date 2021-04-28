@@ -4,6 +4,7 @@ RUN apt-get update \
 && apt-get clean
 COPY requirements.txt /app/requirements.txt
 WORKDIR app
+RUN pip install --upgrade pip
 RUN pip install --user -r requirements.txt
 COPY . /app
 
