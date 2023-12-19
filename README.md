@@ -42,23 +42,25 @@ Python package versions will be used.**
 
 1. Download this github repository (e.g. git clone https://github.com/jmvera255/pepMeld).
 1. Ensure Docker is running on your local machine
-1. From the top-level directory of the repo, run `docker build -t pepmeld:v1.1 .` to 
+1. From the top-level directory of the repo, run `docker build -t pepmeld:v1 .` to 
 build an image with `pepMeld` installed.
+- **Apple Silicon M1 users** - use modified build command: `docker build --platform linux/amd64 -t pepmeld:v1 .`
 - See Docker's `build` documentation for more details.
 - For more background on building and using Docker images, see the 
 [Docker lesson])https://carpentries-incubator.github.io/docker-introduction/05-creating-container-images/index.html#create-a-new-docker-image) from Software Carpentry.
-1. Run the pepMeld container interactively, with 2 cores: `docker run --rm --cpus 2 -it -v /path/to/data:/scratch pepmeld:v1.1`
+1. Run the pepMeld container interactively, with 2 cores: `docker run --rm --cpus 2 -it -v /path/to/data:/scratch pepmeld:v1`
+- **Apple Silicon M1 users** use modified run command (optional): `docker run --platform linux/amd64 --rm --cpus 2 -it -v /path/to/data:/scratch pepmeld:v1`
 - The command above includes arguments to mount a directory (aka volume) that contains your peptide array 
 data to the container in a directory located at `/scratch`. This is required so that your data, and output, 
 will be accessible to pepMeld software will the container is running.
 
-From the terminal, the above steps would be:
+From the terminal, the above steps would be, again note above modifications for Apple Silicon M1 users:
 
 ```bash
 git clone https://github.com/jmvera255/pepMeld
 cd pepMeld/
-docker build -t pepmeld:v1.1 .
-docker run --rm --cpus 2 -it -v /path/to/data:/scratch pepmeld:v1.1
+docker build -t pepmeld:v1 .
+docker run --rm --cpus 2 -it -v /path/to/data:/scratch pepmeld:v1
 mkdir -p /scratch/out
 mkdir -p /scratch/out_charts
 python /pepMeld/process_arrays.py --transforms_path=/scratch/transformations_v1.json
@@ -76,6 +78,7 @@ python /pepMeld/process_arrays.py --transforms_path=/scratch/transformations_v1.
 # statsmodels==0.11.0
 # seaborn==0.11.1
 # pandas==1.2.2
+# numpy==1.23.3
 # Add the requirements you are missing 
 # add tranformation reltative path here:
 pepMeld_transformations_path=<transformations_path.json>
